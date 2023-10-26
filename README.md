@@ -1,7 +1,5 @@
 # EasyZK
-My learning notes for Zero Knowledge Proof.
-
-The folder structure is inspired by: https://github.com/ventali/awesome-zk
+My learning notes for Zero Knowledge Proof. For every blog that I write, I will include it in this README page with a short description. If there's anything wrong, please raise an Issue and I will follow up there!
 
 # ZKP Projects
 
@@ -17,3 +15,7 @@ The folder structure is inspired by: https://github.com/ventali/awesome-zk
 ### FHE
 
 - [FHE - Don't Expose your data ever again](https://www.brianseong99.com/post/fhe-encrypted-computation-for-maximum-privacy) - **Fully Homomorphic Encryption, the Encrypted Computation for Maximum Privacy**: Covering some of the fundamental basics of FHE, and then the current snapshot of the application of FHE. 
+
+# Reference
+
+- https://github.com/ventali/awesome-zk
