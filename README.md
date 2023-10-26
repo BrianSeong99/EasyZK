@@ -1,4 +1,4 @@
-# EasyZKP
+# EasyZK
 My learning notes for Zero Knowledge Proof.
 
 The folder structure is inspired by: https://github.com/ventali/awesome-zk
