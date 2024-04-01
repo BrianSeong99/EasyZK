@@ -1,23 +1,13 @@
 # zkVM Part Two - Design Considerations of zkVM
 
 ![alt text](pics/zkVM-PartTwoBanner.png)
-The Realm of “ZK Everything” - General-purposed Zero Knowledge Virtual Machine Blog Series.
+*The Realm of “ZK Everything” - General-purposed Zero Knowledge Virtual Machine Blog Series.*
 
-By @BrianSeong99
+*By @BrianSeong99*
 
+*Special Thanks to Keith Chen from SNZ for the review!*
 
-Special Thanks to Keith Chen from SNZ for the review!
-
-
-This is the part two of the explaining series:
-
-Part One - Understanding zkVM: Introducing the concept of zkVM and the general execution pipeline of zkVM.
-
-Part Two - Design Constraints of zkVM: Elaborate further on the design constraints when it comes to building a zkVM, which includes the zero-knowledge proof stack and the virtual machine design.
-
-Part Three - Exploring zkVM Projects, Comparison, and Future: Dive into the different designs and implementations of existing zkVM projects, and compare their advantages and disadvantages. And Last I will share a little bit of my thoughts on the future of zkVM.
-
-This is a topic that requires extensive computer science fundamentals to understand. The most important topic would be understanding Computer Architecture, where you learn about CPU Pipelines, Instruction sets, Machine Types, Data Flow Control, storage/memory models, and also cryptography basics. (I took mine back in 2019 learning about how to implement MIPs using Verilog and never thought one day I would actually make use of the knowledge ;)
+This section will require extensive computer science fundamentals to understand. The most important topic would be understanding Computer Architecture, where you learn about CPU Pipelines, Instruction sets, Machine Types, Data Flow Control, storage/memory models, and also cryptography basics. (I took mine back in 2019 learning about how to implement MIPs using Verilog and never thought one day I would actually make use of the knowledge ;)
 
 
 All of the design considerations are there to serve this purpose: to make a zk-friendly execution trace that can generate and verify proofs quickly and in small sizes. This being the first priority, there are other properties including safety, useability, and more, which are also gradually being fulfilled.
@@ -26,61 +16,53 @@ All of the design considerations are there to serve this purpose: to make a zk-f
 I will explore the design constraints of two major components of the zkVM in this article, first the Virtual Machine, and then the Zero Knowledge part.
 
 
-----------Enjoy!-----------
+<center>----------Enjoy!-----------</center>
+<br/>
+<br/>
 
-
-Virtual Machine
+# Virtual Machine
 I will explain a little bit about what are the design factors to consider when implementing VM. It’s okay to not understand everything in this section, you will have to come back to this section when you start reading part 3 of the blog series to understand them better.
 
 
-Instruction sets
-Mainstream instructions like RISC V, WASM
+### Instruction sets
+- Mainstream instructions like RISC V, WASM
+- EVM instructions, this would be mostly for zkEVM
+- Zero Knowledge specific instructions like Miden, Cairo
 
-EVM instructions, this would be mostly for zkEVM
+### Machine Type
+- Stack Machine: this is the simple kind of machine that follows the rule of Last-In-First-Out (LIFO), where the most recently added data would be the first to be removed. 
 
-Zero Knowledge specific instructions like Miden, Cairo
+- Register Machine: this is the more adopted kind of machine type, especially for CPU. It was created because having to access data from Cache or Memory during ALU calculation would be a daunting task, wasting a lot of time. Therefore having an immediately accessible on-cpu-storage that is really small and ultra fast to access would speed up the CPU operation exponentially.
 
-Machine Type
-Stack Machine: this is the simple kind of machine that follows the rule of Last-In-First-Out (LIFO), where the most recently added data would be the first to be removed. 
+- Memory-Memory Machine: this is exactly opposite to Register Machine where most of the data is stored on the memory, which could encourage the instruction sets to be simpler, since data read and write would only be using “MLOAD”, “MSTORE”, and no need to consider using Register Data operations.
 
-Register Machine: this is the more adopted kind of machine type, especially for CPU. It was created because having to access data from Cache or Memory during ALU calculation would be a daunting task, wasting a lot of time. Therefore having an immediately accessible on-cpu-storage that is really small and ultra fast to access would speed up the CPU operation exponentially.
+### Flow Control
+- Harvard Architecture: named after the Harvard Mark 1 computer, it is a design from the very beginning time of the modern computer. It separates its memory into instruction memory and data memory, this design makes accessing memory more efficient where it can use two pipelines to access instruction and data at the same time. There are some more efficient designs that would even divide the cache into 2 sections to parallel with memory. It’s usually used for embedded devices for more application-specific use cases for more efficient processing.
 
-Memory-Memory Machine: this is exactly opposite to Register Machine where most of the data is stored on the memory, which could encourage the instruction sets to be simpler, since data read and write would only be using “MLOAD”, “MSTORE”, and no need to consider using Register Data operations.
+- Von Neumann Architecture: If you have taken a computer science degree, you should know about this name. This is the most widely adopted computer architecture that works among computers, servers, phones, and more. The magic is that instead of using 2 separate memory sections for instruction and data, it uses a unified single memory for data access. Due to its bigger memory size and versatility, Von Neumann Architecture is mostly used for general wide range of applications.
 
-Flow Control
-Harvard Architecture: named after the Harvard Mark 1 computer, it is a design from the very beginning time of the modern computer. It separates its memory into instruction memory and data memory, this design makes accessing memory more efficient where it can use two pipelines to access instruction and data at the same time. There are some more efficient designs that would even divide the cache into 2 sections to parallel with memory. It’s usually used for embedded devices for more application-specific use cases for more efficient processing.
-
-Von Neumann Architecture: If you have taken a computer science degree, you should know about this name. This is the most widely adopted computer architecture that works among computers, servers, phones, and more. The magic is that instead of using 2 separate memory sections for instruction and data, it uses a unified single memory for data access. Due to its bigger memory size and versatility, Von Neumann Architecture is mostly used for general wide range of applications.
-
-Merkelized Abstract Syntax Tree: You might have seen it somewhere in other places in blockchain, in this case, it's about composting assembly codes into leaves and nodes. Here are some of the traits of MAST:
-
-All programs can be reduced to a single hash (the root of the MAST)
-
-Every internal node is itself a MAST of a smaller program
-
-Leaves of a program MAST are linear programs (no control flow)
+- Merkelized Abstract Syntax Tree: You might have seen it somewhere in other places in blockchain, in this case, it's about composting assembly codes into leaves and nodes. Here are some of the traits of MAST:
+  - All programs can be reduced to a single hash (the root of the MAST)
+  - Every internal node is itself a MAST of a smaller program
+  - Leaves of a program MAST are linear programs (no control flow)
+  
+  Basically, the tree nodes are accessed from the leftmost node and go through all the nodes and leaves via the left traversal tree.
 
 
-Picture from zk7 talk from the founder of @0xPolygonMiden, @bobbinth
+### Native Field
+- 32 bits, 64 bits, 128 bits, 256 bits: the field size directly affects the performance of proof generation as most hardware is 64 bits, and there are advanced hardware acceleration instructions like avx2 that run on 32 bits. But there are also numbers that can only be housed in 256-bit format. So figuring out ways to make good use of hardware and make sure software is optimized for the hardware capability is essential for optimizing the performance of ZK proof generation. 
+
+### Other Considerations:
+- Program initialization: This is the initial setup phase of the VM program. Might involve ZK setup as well depending on the design of the ZK.
+
+- Function calls: static or dynamic call targets, static calls are jump access of a function logic in assembly code with a static address, which means the function will always be at that location in memory/program. Dynamic calls would be more complicated and the location of the dynamic function would only be calculated when the program is executing. 
+
+- Memory Model: Strategies to manage memory. It is self is another complex topic, in short is basically how to organize and manage memory space so that accessing data is fast, with low cost, and adaptable. There are many factors to consider depending on the application, I encourage you to do some more research on this part if you are interested. 
+
+- Native Data types: Primitive Data types, Dynamic Data types, field elements, and more.
 
 
-Basically, the tree nodes are accessed from the leftmost node and go through all the nodes and leaves via the left traversal tree.
-
-
-Native Field
-32 bits, 64 bits, 128 bits, 256 bits: the field size directly affects the performance of proof generation as most hardware is 64 bits, and there are advanced hardware acceleration instructions like avx2 that run on 32 bits. But there are also numbers that can only be housed in 256-bit format. So figuring out ways to make good use of hardware and make sure software is optimized for the hardware capability is essential for optimizing the performance of ZK proof generation. 
-
-Other Considerations:
-Program initialization: This is the initial setup phase of the VM program. Might involve ZK setup as well depending on the design of the ZK.
-
-Function calls: static or dynamic call targets, static calls are jump access of a function logic in assembly code with a static address, which means the function will always be at that location in memory/program. Dynamic calls would be more complicated and the location of the dynamic function would only be calculated when the program is executing. 
-
-Memory Model: Strategies to manage memory. It is self is another complex topic, in short is basically how to organize and manage memory space so that accessing data is fast, with low cost, and adaptable. There are many factors to consider depending on the application, I encourage you to do some more research on this part if you are interested. 
-
-Native Data types: Primitive Data types, Dynamic Data types, field elements, and more.
-
-
-I got this design considerations guideline from a talk from the founder of @0xPolygonMiden, @bobbinth, and added my own explanations. Honestly, it is one of the best talks to quickly grasp an understanding of zkVM!
+I got this design considerations guideline from a [talk](https://youtu.be/81UAaiIgIYA?si=p2qJMkIU7MNrTTYu&t=528) from the founder of @[0xPolygonMiden](https://twitter.com/0xpolygonmiden), @[bobbinth](https://twitter.com/bobbinth), and added my own explanations. Honestly, it is one of the best talks to quickly grasp an understanding of zkVM!
 
 
 Zero Knowledge Proof
