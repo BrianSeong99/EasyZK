@@ -314,7 +314,7 @@ $c \leftarrow \langle P, V(r) \rangle (g, \ell, d, T)$
 **定义 4.1（NARK）**。设 $R$ 是定义在公共参数、结构、实例和见证的元组 $(pp, s, u, w)$ 上的关系。一个非交互式知识论证（NARK）对于 $R$ 是一个四元组的概率多项式时间（PPT）算法 $(G, K, P, V)$，代表生成器、编码器、证明者和验证者，分别具有以下接口：
 
 - $G(1^\lambda) \to pp$：给定一个安全参数 $\lambda$，抽样公共参数 $pp$。
-- $K(pp, s) \to (pk, vk)$：给定一个结构 $s$，输出一个证明者密钥 $pk$ 和一个验证者密钥 $vk$。
+- $K(pp, s) \to (pk, vk)$：给定一个结构 $s$，输出一个证明者密钥 $pk$ 和一个验证者密钥 $vk$
 - $P(pk, u, w) \to \pi$：给定一个实例 $u$ 和一个见证 $w$，输出一个证明 $\pi$，证明 $(pp, s, u, w) \in R$。
 - $V(vk, u, \pi) \to \{0, 1\}$：给定一个实例 $u$ 和一个证明 $\pi$，输出 1（接受）或 0（拒绝）。
 
@@ -336,7 +336,7 @@ $c \leftarrow \langle P, V(r) \rangle (g, \ell, d, T)$
 **定义 4.4（IVC）**。一个增量可验证计算（IVC）方案是一个四元组的概率多项式时间（PPT）算法 $(G,K,P,V)$，代表生成器、编码器、证明者和验证者，具有以下接口：
 
 - $G(1^\lambda) \to pp$：给定一个安全参数 $\lambda$，采样公共参数 $pp$。
-- $K(cp, F) \to (pk, vk)$：给定一个多项式时间函数 $F$，输出一个证明者密钥 $pk$ 和一个验证者密钥 $vk$。
+- $K(pp, F) \to (pk, vk)$：给定一个多项式时间函数 $F$，输出一个证明者密钥 $pk$ 和一个验证者密钥 $vk$。
 - $P(pk, (i, z_0, z_i), \omega_i, \Pi_i) \to \Pi_{i+1}$：给定一个计数器 $i$、一个初始输入 $z_0$、在 $i$ 次迭代后声称的输出 $z_i$、一个非确定性建议 $\omega_i$，和一个 IVC 证明 $\Pi_i$，产生一个新的 IVC 证明 $\Pi_{i+1}$，证明 $z_{i+1} = F(z_i, \omega_i)$。
 - $V(vk, (i, z_0, z_i), \Pi_i) \to \{1, 0\}$：给定一个计数器 $i$、一个初始输入 $z_0$、在 $i$ 次迭代后声称的输出 $z_i$，和一个 IVC 证明 $\Pi_i$，输出 1（接受）或 0（拒绝）。
 
@@ -386,8 +386,8 @@ $$
 
 **定义 4.7（PCD 一致性）**。设 $\varphi$ 为一个断言。我们定义一个顶点 $u \in V(T)$ 为 $\varphi$-一致的，如果对于所有出边 $e = (u, v) \in E(T)$：
 
-- 如果 $u$ 没有入边，那么 $\varphi(z(e), \omega(u), [\ldots, \_]) = 0$。
-- 如果 $u$ 有入边 $e_{j=1}^{i=1}$，那么 $\varphi(z(e), \omega(u), [z(e_j)]_{j=1}^{i=1}) = 1$。
+- 如果 $u$ 没有入边，那么 $\varphi(z^{(e)}, w^{(u)}) \, [\perp, \ldots, \perp] = 0$。
+- 如果 $u$ 有入边 $e_{j=1}^{i=1}$，那么 $\varphi(z^{(e)}, w^{(u)}) \, [z^{(e)}]_{i=1}^r = 1$。
 
 我们说 T 是 $\varphi$-一致的，如果它所有的顶点都是 $\varphi$-一致的。我们使用符号 $\varphi(T) \to \{0, 1\}$ 表示 T 的 $\varphi$-一致性。
 
@@ -513,28 +513,28 @@ $$
 \text{s}_{\text{CCS}} = (m, n, N, \ell, t, q, d, pp, [M_i]_{i=1}^t, [S_i]_{i=1}^q, [c_i]_{i=1}^q)
 $$
 
-让 $s = \log m$, $s' = \log n$ 和 $s'' = \log(n - \ell - 1)$。通过解释每个 $M_i$ 作为类型 ${0,1}^{s} \times {0,1}^{s'} \rightarrow F$ 的函数，让 $\tilde{M}_i$ 表示 $M_i$ 的多线性扩展（MLE）。同样，对于一个推测的见证 $w \in F^{n-\ell-1}$ 让 $\tilde{w}$ 表示 $\tilde{w}$ 作为类型 ${0,1}^{s''} \rightarrow F$ 函数的MLE。
+让 $s = \lceil \log m \rceil$, $s' = \lceil \log n \rceil$ 和 $s'' = \lceil \log(n - \ell - 1) \rceil$。通过解释每个 $M_i$ 作为类型 $\{0,1\}^{s} \times \{0,1\}^{s'} \rightarrow F$ 的函数，让 $\tilde{M}_i$ 表示 $M_i$ 的多线性扩展（MLE）。同样，对于一个推测的见证 $w \in F^{n-\ell-1}$ 让 $\tilde{w}$ 表示 $\tilde{w}$ 作为类型 ${0,1}^{s''} \rightarrow F$ 函数的MLE。
 
 **定义 4.18 (承诺的CCS)**。让 $\text{R}_{\text{CCCS}}$ 是承诺的可定制约束系统（CCCS）关系，如下定义。让PC是一个在有限域 $F$ 上的加性同态多项式承诺方案。一个 $\text{R}_{\text{CCCS}}$ 结构
 
 $$
-\text{s}_{\text{CCCS}} = (m, n, N, \ell, t, q, d, pp, [M_i]_{i=1}^t, [S_i]_{i=1}^q, [c_i]_{i=1}^q)
+\text{s}_{\text{CCCS}} = (m, n, N, \ell, t, q, d, pp, [\tilde{M_i}]_{i=1}^t, [S_i]_{i=1}^q, [c_i]_{i=1}^q)
 $$
 
 包括：
 
-- 大小界限 $m,n,N,\ell,t,q,d \in \mathbb{N}$ 以及 $pp \leftarrow \text{PC.Setup}(1^{\lambda},s'')$，其中 $n > \ell$ 并且 $s = \log m$，$s' = \log n$，$s'' = \log(n - \ell - 1)$。
-- 一个序列的 $t$ 个多线性多项式 $[M_1, \ldots, M_t]$ 每个在 $F[X_1, \ldots, X_{s+s'}]$ 上有 $s + s'$ 变量，至多有 $N = \Omega(m)$ 个在布尔超立方体 ${0,1}^{s+s'}$ 上求值为非零的位置。
+- 大小界限 $m,n,N,\ell,t,q,d \in \mathbb{N}$ 以及 $pp \leftarrow \text{PC.Setup}(1^{\lambda},s'')$，其中 $n > \ell$ 并且 $s = \lceil \log m \rceil$，$s' = \lceil \log n \rceil$，$s'' = \lceil \log(n - \ell - 1) \rceil$。
+- 一个序列的 $t$ 个多线性多项式 $[\tilde{M_1}, \ldots, \tilde{M_t}]$ 每个在 $F[X_1, \ldots, X_{s+s'}]$ 上有 $s + s'$ 变量，至多有 $N = \Omega(m)$ 个在布尔超立方体 ${0,1}^{s+s'}$ 上求值为非零的位置。
 - 一个序列的 $q$ 个多重集 $[S_1, \ldots, S_q]$，每个的基数最多 $d$，在域 ${1, \ldots, t}$ 上。
 - 一个序列的 $q$ 个常数 $[c_1, \ldots, c_q]$，每个在 $F$ 中。
 
-一个 $\text{R}_{\text{CCCS}}$ 实例 $(C, x, \tilde{w})$ 包含对 $s''$-变量多线性多项式和公共输入 $x \in F^{\ell}$ 的承诺 $C$，以及 $u \in F$, $v_1, \ldots, v_t \in F$。一个 $\text{R}_{\text{CCCS}}$ 见证是 $s''$-变量多线性多项式 $\tilde{w}$。
+一个 $\text{R}_{\text{CCCS}}$ 实例 $(C, x)$ 包含对 $s''$-变量多线性多项式和公共输入 $x \in F^{\ell}$ 的承诺 $C$。一个 $\text{R}_{\text{CCCS}}$ 见证是 $s''$-变量多线性多项式 $\tilde{w}$。
 
-一个 $\text{R}_{\text{CCCS}}$ 结构-实例元组 $(s, (C, x, \tilde{w}))$ 由 $\text{R}_{\text{CCCS}}$ 见证 $\tilde{w}$ 满足，如果 $\text{PC.Com}(pp, \tilde{w}) = C$ 并且对于所有 $x \in \{0, 1\}^s$：
+一个 $\text{R}_{\text{CCCS}}$ 结构-实例元组 $(s, (C, x))$ 由 $\text{R}_{\text{CCCS}}$ 见证 $\tilde{w}$ 满足，如果 $\text{PC.Com}(pp, \tilde{w}) = C$ 并且对于所有 $x \in \{0, 1\}^s$：
 
 ![](./pics/equa16.png)
 
-其中 $\tilde{z}$ 是 $s''$-变量 $z = (w,1,x)$ 的MLE，视为类型 ${0,1}^{s''} \rightarrow F$ 的函数。
+其中 $\tilde{z}$ 是 $s'$-变量 $z = (w,1,x)$ 的MLE，视为类型 ${0,1}^{s'} \rightarrow F$ 的函数。
 
 ### 4.8.3 线性化承诺的CCS关系
 
