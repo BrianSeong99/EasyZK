@@ -158,7 +158,7 @@ Nexus 网络试图做同样的事情，但针对的是可验证计算的问题�
 
 3. **Nexus 虚拟机**。NVM 和其算术化版本在 R1CS 的实现，以及用于内存检查的 Merkle 证明，还有一个 RISC-V 到 NVM 的编译器。
 
-   NVM 的算术化，尽管还相当原始，仍然是每个 CPU 周期大小为 30k 的电路。这是一个大型电路（主要是由于内存检查），但我们预期即将到来的改进的内存检查技术将使机器大小减少10倍，而更大的数量级改进将来自于使用 zkVM 协处理器[KS22; ZGGX23; GHK23]和查找参数[STW23b; AST23]。
+   NVM 的算术化，尽管还相当原始，仍然是每个 CPU 周期大小为 30k 的电路。这是一个大型电路（主要是由于内存检查），但我们预期即将到来的改进的内存检查技术将使机器大小减少10倍，而更大的数量级改进将来自于使用 zkVM 协处理器[KS22;ZGGX23;GHK23]和查找参数[STW23b;AST23]。
 
    普通用户不必担心这个中间优化步骤，但它会从编译器优化带来显著的性能提升，并由于机器的简单性而更加安全。
 
@@ -212,7 +212,7 @@ fn fib(n: u32) -> u32 {
 
 **冯·诺依曼架构（von Neumann Architecture）**。通用图灵机的概念很快就导致其他科学家如冯·诺依曼（von Neumann）进行了实现。今天，几乎所有数字计算机都遵循“冯·诺依曼架构”[Von93]。Nexus VM 也遵循冯·诺依曼架构。
 
-**经典证明**。在1956年，Gödel 给冯·诺依曼写了一封信[Göd56; Sip92]，他指出如果存在一个能够有效证明数学定理的实际机器，“它将具有最大量级的影响”。正如我们将看到的，这一概念与证明计算的概念接近。Gödel 实际上提出了我们今天所知的（仍未解决的）**P=NP**问题，它涉及确定性（超多项式时间）验证者（即类**NP**）（多项式时间）验证者（即类**P**）和证明的概念[2]。
+**经典证明**。在1956年，Gödel 给冯·诺依曼写了一封信[Göd56;Sip92]，他指出如果存在一个能够有效证明数学定理的实际机器，“它将具有最大量级的影响”。正如我们将看到的，这一概念与证明计算的概念接近。Gödel 实际上提出了我们今天所知的（仍未解决的）**P=NP**问题，它涉及确定性（超多项式时间）验证者（即类**NP**）（多项式时间）验证者（即类**P**）和证明的概念[2]。
 
 **零知识证明**。1985年，零知识（zero-knowledge）交互证明的故事在 MIT 开始了，Goldwasser、Micali 和 Rackoff 在他们的论文[GMR19]中引入了**IP**类，这是**NP**的一个泛化，允许验证者和验证者之间的随机性和互动。这从根本上改变了证明本身的概念。他们介绍的零知识的定义考虑了除了其有效性之外不揭示任何信息的证明。他们的论文获得了第一个 Godel 奖。
 自那以后，关于证明的大量研究产生了其他概念，例如 Arthur-Merlin 协议[Bab85]（同时工作）、MIPs[BGKW19;FRS88;BFL91]、PCPs[FRS88;BFLS91;AS92;Aro+92]、IOPs[BCS16]、NIZK[BFM88;BSMP91]、知识证明[SP92]、简洁论证和CS证明[Kil92;Mic94]以及（zk）-SNARKs[Mic94;Gro10;BCCT12;GGPR13]。关于零知识证明的历史和直到现在的现代技术的简要回顾，请参见第3节。Nexus项目建立在这些工作以及自零知识证明发明以来近四十年的研究基础之上。我们相信，由于最近的科学进步，真正可扩展的零知识对互联网时代来说就在地平线上。
@@ -251,4 +251,34 @@ Nexus 系统通过扩展性解决了上述限制：
 
 我们相信，用户不应该需要深入了解支持 Nexus 系统的零知识研究和相关高性能工程背后的复杂（且非平凡）的安全性和性能属性，这些研究和工程已经持续了40多年。
 
+## 3 背景
 
+我们简要回顾了至今为止的科学进展，这些进展让我们站在了当前的时间点上。正如我们将看到的，我们似乎处于一个新形式的计算—可验证计算—变得可用于人类的时代的边缘。我们相信，在一个文明的历史中很少有新形式的计算被引入，我们很兴奋能够成为这一时刻的一部分。
+
+Nexus 项目建立在巨人的肩膀上：伟大的科学家和数学家及其数十年的工作。有关深入讨论，请参阅 Goldreich 的出色文章[Gol93]《证明系统的分类》或 Ben-Sasson 等人的总结[BCS16]，我们的讨论基于这些。
+
+**交互式证明（Interactive Proofs）**。Goldwasser、Micali 和 Rackoff 在 1985 年引入了交互式证明[GMR19]。在一个 k 轮的交互式证明中，一个多项式时间的验证者与一个全能的证明者交换 k 条消息，然后接受或拒绝。IP[k] 是具有 k 轮交互式证明的语言类，它通过允许验证者和证明者之间的随机性和交互来泛化 NP 类。Babai 独立引入了 Arthur-Merlin 游戏[Bab85]。AM[k] 是具有 k 轮 Arthur-Merlin 游戏的语言类。Goldwasser 和 Sipser[GS86]展示了两种模型的等价性，即 IP[k] ⊆ AM[k+2]。1992 年，Lund、Fortnow、Karloff 和 Nisan[LFKN92]引入了 sum-check (交互式证明) 协议[LFKN92]（现在是我们系统的主要支柱，见第 4.1 节和我们对[Set20;KS23b;STW23a]协议的实现），Shamir[Sha92] 在此基础上展示了 IP = PSPACE。后者是一个重大结果，表明交互式证明比先前认为的更加强大。
+
+**多证明者交互式证明（Multi-prover interactive proofs, MIPs）**。Ben-Or、Goldwasser 和 Wigderson 在 1988 年引入了多证明者交互式证明[BGKW19]。在一个 $k$ 轮的 $p$ 证明者交互式证明中，一个多项式时间的验证者与 $p$ 个不相互通信的全能证明者互动 $k$ 次，然后接受或拒绝。MIP[p, k] 是具有 $k$ 轮 $p$ 证明者交互式证明的语言类。在[BGKW19]中，作者证明了 2 个证明者总是足够的（即 $MIP[p, k] = MIP[2, k]$）。Fortnow、Rompel 和 Sipser[FRS88]展示了 MIP$[poly(n), poly(n)] ⊆ NEXP$。两年后，Babai、Fortnow 和 Lund[BFL91]展示了 $MIP[2, 1] = NEXP$。
+
+**可概率性检查的证明（Probabilistically checkable proofs, PCPs）**。可概率性检查的证明由[FRS88;BFLS91;AS92;Aro+92]引入。在一个可概率性检查的证明中，一个多项式时间的验证者对一个证明字符串有 oracle 访问权限；$PCP[r, q]$ 是验证者最多使用 $r$ 位随机性并查询证明的最多 $q$ 个位置的语言类。上述关于 MIP 的结果意味着 $PCP[poly(n), poly(n)] = NEXP$。后来的工作“缩小”了这个结果到 NP：Babai、Fortnow、Levin 和 Szegedy[BFLS91]展示了 $NP = PCP[O(\log n), poly(\log n)]$；Arora 和 Safra[AS92]展示了 $NP = PCP[O(\log n), O(\sqrt{\log n})]$；以及 Arora、Lund、Motwani、Sudan 和 Szegedy[Aro+92]展示了 $NP = PCP[O(\log n), O(1)]$。这最后一个被称为 PCP 定理，是复杂性理论中的一个重大结果，另一个获得了 Godel 奖的论文。
+
+**参数系统（Argument systems）** 在密码学中，人们经常考虑参数系统，这是 IP，其中完整性从完美放宽到仅计算。这允许绕过 IP 的各种众所周知的限制[BHZ87;PS05]。Kilian[Kil92]通过使用 PCP 与 Merkle 树[Merk87]的结合，提供了第一个简洁交互式参数系统的构建。Micali[Mic94]通过在随机预言模型中应用 Fiat-Shamir 变换[FS86]，使相似的协议变得非交互式，从而获得了第一个 zk-SNARK。
+
+**随机预言模型（The Random Oracle Model, ROM）**。随机预言模型（ROM）[BR93;CGH04;KM15]是用于研究计算受限证明者的一种理想化模型。大致而言，ROM是一种模型，在该模型中，证明者可以访问一个随机预言，这是一个对每个输入返回随机输出的函数。ROM与 Fiat-Shamir 变换[FS86]结合使用，将交互式证明编译成非交互式的，产生 NARKs（非交互式参数系统）[BCCT12]。参见第4.2节，了解 NARKs 的定义。
+
+**zk-SNARKs** 许多工作构造了 SNARK 和 zk-SNARK 的实现[Mic94;Kil92]。在 Micali 之后，Lipmaa[DL08]构造了一个基于额外的假设的实现。Groth[Gro10]实现了第一个基于配对的 zk-SNARK。在实践中，由于其小巧的证明大小和以太坊兼容性，Groth16[Gro16]是行业中最广泛使用的 zk-SNARK，其次是 Halo 和 Halo2[BGH20]、Plonk[GWC19]、Spartan[Set20]、Marlin[Chi+20]、HyperPlonk[CBBZ23]、Bulletproofs[Bün+18]以及其他[Zah+18;MBKM19;Xie+19;AHIV17;Ben+19;ZXZS20;Gol+21;XZS22]。
+
+**交互式 Oracle 证明（Interactive Oracle Proofs, IOPs）**。IOPs 由 Ben-Sasson、Chiesa 和 Spooner[BCS16]引入。IOP是 IP、MIP 和 PCP 的泛化，可以使用适当的承诺（Commitment）方案编译成 SNARKs。使用一元多项式承诺方案，可以将多项式-IOP 编译成 SNARKs，产生如 Sonic[MBKM19]、Marlin[Chi+20] 和 Plonk[GWC19]等协议。使用多线性多项式承诺方案，可以将多线性-IOP 编译成 SNARKs，产生如 Hyrax[Wah+18]、Libra[Xie+19] 和 Spartan[Set20]等协议。使用向量承诺方案，可以将向量-IOP 编译成 SNARKs，产生如 STARK[BBHR18b]、Aurora[Ben+19]、Virgo[ZXZS20]、Brakedown[Gol+21] 和 Orion[XZS22]等协议，通常都被称为 STARKs。虽然 STARKs 的优点是不需要受信任的设置并且在量子后时代可能安全，但它们有较大的证明尺寸（例如，数十千字节）和较长的验证时间，因此不适合递归使用。
+
+**增量可验证计算（Incrementally Verifiable Computation, IVC）**。增量可验证计算（IVC）在 2008 年由 MIT 的 Valiant[Val08]引入。正如前文提到的，IVC 是一种设置，其中证明者执行计算并增量更新其正确性的证明。Valiant 还展示了如何通过 SNARKs 的递归组合来构造 IVC。
+
+**携带证明的数据（Proof-Carrying Data, PCD）**。携带证明的数据（PCD）由 Chiesa 和 Tromer[CT10]首次引入，它将增量可验证计算（IVC）的概念扩展到分布式设置，允许在不信任各方之间执行分布式可验证计算。特别是，PCD 使得在有向无环图（DAG）上并行化的分布式计算证明成为可能，而在传统的 IVC 模型中，计算和证明更新是序列化的。
+
+**来自 SNARKs 的 PCD（PCD from SNARKs）**。一种众所周知的构造 PCD / IVC 的方法是使用针对 NP 的 SNARKs。在每一步计算，证明者生成一个 SNARK，证明它已经正确地应用了一个函数 F，以及在电路里面包含了SNARK验证器来验证了上一步生成的证明。然而，众所周知，这种方法不切实际[BCTV17;CCDW20]，因为 SNARKs 递归组合会导致非常大的开销。或者，人们可以使用无信任设置的 SNARKs，但它们的验证器甚至比带有信任设置的 SNARKs 更昂贵，无论是从理论上还是实际上。如上所述，这使得对于递归使用 STARKs 不切实际。
+
+**SNARKs 用于虚拟机和椭圆曲线循环（SNARKs for Virtual Machines and Cycles of Elliptic Curves）**。遵循 IVC 以及 Valiant 的工作中对递归 SNARKs 的理论工作[BCCT13]，Ben-Sasson、Chiesa、Tromer 和 Virza[BCTV17]引入了椭圆曲线循环的概念（这是我们广泛使用的，见 [KST22;NBS23;KS23a]，第5.4节和图2），这些循环对于使用 KZG[KZG10] 或 Pedersen[Ped91] 承诺的星星系统（STARKs）、FRI [BBHR18a] 来说是（几乎）必要的，以便进行递归组合的SNARKs。在此之后，Ben-Sasson、Chiesa、Tromer、Genkin 和 Virza 构建了 IVC 的第一个实现，用于简单的虚拟机，采用 Harvard 架构的 TinyRAM[Ben+13]。作者后来提供了一个基于冯诺依曼架构的虚拟机的 IVC 第一次实现，vnTinyRAM[BCTV14]。vnTinyRAM 启发了 Cairo zkVM 项目[GPR21]的实现，并且目前在 Starkware [Sta22] zk-rollup[LNS20]使用中。vnTinyRAM也是 Nexus zkVM 的灵感来源。
+
+**累积（Accumulation）**。近期的一系列工作提出了批量验证 **NP** 陈述来减少构建 IVC / PCD 时证明者的开销。Bowe、Grigg 和 Hopwood 构建了 Halo[BGH19]，提出了一种递归证明构成方法，该方法替换了 SNARK 验证器，采用了更简单的累积器算法，延迟在 IVC 链的最末端进行完全验证。Bünz、Chiesa、Mishra 和 Spooner [BCM20] 正式定义了*累积方案*，展示了它们足以构建 PCD。随后，Bünz 等人[Bün+21] 展示了如何从任何满足弱类型累积的 NARK 构建 PCD。
+
+**折叠方案（Folding Schemes）**。折叠方案由 Kothapalli、Setty 和 Tzialla 在 2022 年引入[KST22]，作为一种在不使用 SNARKs 的情况下实现 IVC 的方法，它通过直接聚合 NP 陈述的证明本身。后续的工作改进或泛化了 Nova，包括 SuperNova [KS22]、HyperNova [KS23b]、CycleFold [KS23a]、Protostar [BC23]、ProtoGalaxy [EG23]、从多折叠方案来的 PCD [ZZD23]，以及 KiloNova [ZGGX23]。折叠方案背后的基本概念是利用承诺（例如 Pedersen 承诺 [Ped91]）的同态性质来按顺序积累每个步骤的验证，将 IVC/PCD 聚集到单个实例中，因此在 IVC/PCD 链的末端延迟完全验证。
