@@ -558,3 +558,58 @@ v_i = \sum_{y \in {0,1}^{s'}} \tilde{M}_i(r, y) \cdot \tilde{z}(y)
 $$
 
 其中 $\tilde{z}$ 是 $s''$-变量 $z = (w, u, x)$ 视为类型 ${0,1}^{s'} \rightarrow F$ 的函数。
+
+# 5 组件
+
+## 5.1 一个用于CCS的多重折叠方案
+
+5 组件
+
+5.1 一个用于CCS的多重折叠方案
+
+**构造 5.1 (一个用于CCS的多重折叠方案 [KS23b])**。让PC是一个加法同态的多线性多项式承诺方案，用于有限域 $F$。我们构造一个用于 $(\text{R}_\text{LCCCS}, \text{R}_\text{CCCS}, compact, \mu=1, \nu=1)$ 的多重折叠方案，如下所示。
+
+- $compact(s_1, s_2) \to \{0,1\}$
+  - 如果 $s_1 = s_2$ 返回 1，否则返回 0。
+- $G(1^\lambda) \to pp$：
+  1. 样本尺寸界限 $m, n, N, \ell, t, q, d \in \mathbb{N}$，其中 $n > \ell$。
+  2. 设 $s = \lceil \log m \rceil$, $s' = \lceil \log n \rceil$, $s'' = \lceil \log(n - \ell - 1) \rceil$。
+  3. $pp_{PC} \leftarrow \text{Setup}(1^\lambda, s'')$。
+  4. 输出 $pp \leftarrow (m, n, N, \ell, t, q, d, pp_{PC})$。
+- $K(pp, (s_1, s_2)) \to (pk, vk)$：
+  1. 设 $pk \leftarrow (pp, s_1)$ 且 $vk \leftarrow pp$。
+  2. 输出 $(pk, vk)$。
+- $\langle P, V \rangle ((pk, vk), (u_1, w_1), (u_2, w_2)) \to (u, w)$：
+  1. 解析 $u_1$ 作为一个 $\text{R}_\text{LCCCS}$ 实例 $(C_1, u, x_1, r_{x}, [v_i]_{i=1}^t)$。解析 $u_2$ 作为一个 $\text{R}_\text{CCCS}$ 实例 $(C_2, x_2)$。
+  2. $V \to P$：采样 $\gamma \xleftarrow{R} F$，$\beta \xleftarrow{R} F^{s}, r^{'}_x \xleftarrow{R} F^{s}$。发送 $(\gamma, \beta)$ 给 $P$。
+  3. $V \to P$：运行和检查协议
+   ![](./pics/equa17.png)
+其中：
+   ![](./pics/equa18.png)
+   
+   4. $P \to V$：发送 $[\sigma_i]^{t}_{i=1}$ 和 $[\theta_i]^{t}_{i=1}$，对于所有 $i \in [t]$：
+   ![](./pics/equa19.png)
+   5. $V$：计算 $e_1 \leftarrow \tilde{eq}(r_x, r'_x)$ 和 $e_2 \leftarrow \tilde{eq}(\beta, r'_x)$。如果以下条件不满足则中止：
+   ![](./pics/equa20.png)
+   6. $V \to P$：采样 $\rho \xleftarrow{R} F$ 并发送给 $P$。
+   7. 1. $P, V$：输出折叠的 $\text{RLCCCS}$ 实例 $u = (C', u', x', r_x', [v_i']_{i=1}^t)$，其中对所有 $i \in [t]$：
+   $$
+   C' := C_1 + \rho \cdot C_2,
+   $$
+   $$
+   u' := u + \rho \cdot 1,
+   $$
+   $$
+   x' := x_1 + \rho \cdot x_2,
+   $$
+   $$
+   v_i' := \sigma_i + \rho \cdot \theta_i.
+   $$
+  
+   8. $P$：输出折叠的见证 $w := \tilde{w}'$，其中
+ 
+$$
+\tilde{w}' := \tilde{w}_1 + \rho \cdot \tilde{w}_2.
+$$
+
+**定理 5.1 (一个用于CCS的多重折叠方案)**。构造5.1是一个用于 $(\text{R}_\text{LCCCS}, \text{R}_\text{CCCS}, compact, \mu=1, \nu=1)$ 具有完美完整性和知识健全性的公共硬币多重折叠方案。
