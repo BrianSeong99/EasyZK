@@ -945,3 +945,101 @@ $\varphi'(h, (z, \omega, [(z_l, U_l, u_l, \pi_l), (z_r, U_r, u_r, \pi_r)], v_k, 
 
 **定理 5.7**. 构造 5.7 是一个具有完美完备性、知识正确性和抗攻击性的 PCD 方案。
 
+# 6 定义零知识虚拟机
+
+**定义 6.1 (zkVM方案)**. 设VC是一个绑定向量承诺方案，具有简洁的承诺。我们定义一个零知识可验证计算机（zkVM）方案作为一个由PPT算法组成的四元组(G, K, P, V)，表示生成器、编码器、证明者和验证者，具有以下接口。
+
+- $G(1^\lambda) \rightarrow pp$: 给定安全参数 $\lambda$，采样公共参数 $pp$。
+- $K(pp, \Xi) \rightarrow (pk, vk)$: 给定公共参数 $pp$ 和机器架构 $\Xi = (\varphi, (F_1,...,F_l))$ 的编码，输出证明者的公钥 $pk$ 和验证者的公钥 $vk$。
+- $P(pk, \mathcal{F}^\Xi, x, \omega) \rightarrow (y, \pi)$: 给定一个证明者的公钥 $pk$，一个编码的程序 $\mathcal{F}^\Xi$，一个公开输入 $x$ 和一个私有输入 $\omega$，输出一个声称的输出 $y$ 和一个证明 $\pi$，用以证明 $y = \mathcal{F}^\Xi(x, \omega)$。
+- $V(vk, \overline{\mathcal{F}^\Xi}, x, y, \pi) \rightarrow \{0, 1\}$: 给定一个验证者的密钥 $vk$，一个程序 $\mathcal{F}^\Xi$ 的承诺，一个公开输入 $x$，一个声称的输出 $y$ 和一个证明 $\pi$，输出1（接受）或0（拒绝）。
+
+zkVM方案 $(G, K, P, V)$ 必须满足以下要求。在接下来的描述中，我们隐含地考虑 $\overline{\mathcal{F}^\Xi}$ 是通过向量承诺方案$\mathcal{F}^\Xi$的提交操作来计算的。
+
+- 完美完备性。对于所有PPT对手 $A$：
+  ![](./pics/equa29.png)
+- 知识正确性。对于所有PPT对手 $P^*$，存在一个PPT提取器 $\xi$ 使得
+  ![](./pics/equa30.png)
+- 零知识。对于所有PPT对手 $A$ 存在一个PPT模拟器 $\xi$ 使得
+  ![](./pics/equa31.png)
+- 简洁性。证明的大小，以及验证者的时间和空间复杂性是 $O(1)$。
+
+**备注**. 定义 6.1 等价于对于机器架构 $\Xi$ 编码的计算语言 $\mathcal{L}_\Xi$ 的 zk-SNARK。形式上，我们定义语言 $\mathcal{L}_\Xi$ 如下
+![](./pics/equa32.png)
+特别地，一个机器架构 $\Xi$ 的 zkVM 方案 $\Pi_{zkVM}$ 等价于 $\mathcal{L}_\Xi$ 语言的 zk-SNARK，具有 $O(1)$ 证明大小和 $O(1)$ 验证者时空复杂度。
+
+# 7 Nexus zkVM：一个通用目的的IVC机器
+
+最后，我们将Nexus PCD证明者构建为一系列编译器转换，并使用它作为构建Nexus zkVM的黑箱。这个部分并不完全正式，旨在提供构建的高级概述。我们建议读者参阅技术论文以获得更多细节。
+
+**构造 7.1 (Nexus zkVM)**. Nexus zkVM是一个并行的SuperNova-HyperNova-CycleFold机器，具有简洁的证明压缩。也就是说，让$\mathcal{R}_{CCS} \in NPC$为NP完全的CCS语言用于算术电路可满足性。考虑通过以下一系列变换获得的协议：
+
+$$
+\Pi = PCD[NIVC[FS[CF[MFS[\mathcal{R}_{CCS}]]]]]
+$$
+
+其中：
+
+- MFS[$\mathcal{R}_{CCS}$]: 表示构造 5.1 中的多重折叠方案$（\mathcal{R}_{LCCCS},\mathcal{R}_{CCCS},compa_t,\mu,\nu）$。
+- CF: 表示构造 5.4 中的CycleFold转换。
+- FS: 表示构造 5.3 中多重折叠方案的Fiat-Shamir转换。
+- NIVC: 表示SuperNova非均匀IVC转换，用于非交互多重折叠方案。
+- PCD: 表示NIVC方案的并行化（携带证明数据）转换。
+
+进一步，让zkSNARK = (G, K, P, V)为一个zk-SNARK，用于$\mathcal{R}_{CCS}$。让init和end为设置初始状态并提取机器输出的函数，特别是init函数初始化机器的$\mathcal{T}_z$——主存储器带，和$\mathcal{T}_\omega$——只读的私有存储器带，仅通过非确定性IVC建议来读取。
+
+接下来，我们定义一个增强的IVC验证器$V'_{IVC}$如下，其中所有参数都被视为非确定性建议。该函数实质上包含了Nexus zkVM的“启动”流程。
+   ![](./pics/equa33.png)
+
+因为$V'_{IVC}$可以在多项式时间内计算，它可以表示为$\mathcal{R}_{CCS}$实例$S_{V'_{IVC}}$。让
+
+$$
+(u, w) \leftarrow trace(V'_{IVC}, input)
+$$
+
+表示满足$\mathcal{R}_{CCS}$实例-见证对$(u, w)$，用于执行$V'_{IVC}$的非确定性建议input。
+
+最终，我们构建了一个并行化的zkVM方案
+
+$$
+\Pi_{zkVM} = (G, K, P, V)
+$$
+
+如下：
+
+- $G(1^\lambda) \rightarrow pp$: 输出$\Pi.G(1^\lambda)$。
+- $K(pp, \Xi) \rightarrow (pk, vk)$: 输出$\Pi.K(pp, \Xi)$。
+- $P(pk, \mathcal{F}_\Xi, \omega) \rightarrow (y, \pi)$: 
+  1. 生成IVC证明：
+     
+     (a) 初始化机器状态：$z_0 \leftarrow init(\Xi, (\mathcal{F}_\Xi, x, \omega))$
+     
+     (b) 生成执行轨迹：$(\overrightarrow{z}, \overrightarrow{\omega}) \leftarrow trace(\Xi, z_0)$
+     
+     (c) 通过$r$-ary PCD并行化树计算IVC证明：$\pi_{IVC} \leftarrow \Pi.P(pk, (\overrightarrow{z}, \overrightarrow{\omega}))$
+  
+  2. 压缩：
+     
+     (a) 提取机器输出：$y \leftarrow end(\Xi, z_n)$
+     
+     (b) 计算执行增强IVC验证器的实例-见证对：![](./pics/equa34.png)
+     
+     (c) 生成压缩的zk-SNARK证明：$\pi_{zkSNARK} \leftarrow zkSNARK(pk, u, w)$
+  
+  3. 输出：
+     
+     (a) 设置最终证明：$\pi \leftarrow (u, \pi_{zkSNARK})$
+     
+     (b) 输出$(y, \pi)$
+
+- $V(vk, \mathcal{F}_\Sigma, x, y, \pi) \rightarrow \{0, 1\}$:
+  1. 解析$\pi$为$(u, \pi_{zkSNARK})$
+  2. 检查$u.x = hash(vk, (\overline{\mathcal{F}_\Xi}, x, y))$
+  3. 检查$zkSNARK.V(vk, u, \pi_{zkSNARK}) = 1$
+
+# 8 Nexus网络：一个可验证的超级计算机
+
+Nexus网络是Nexus zkVM（图 2）的IVC/PCD证明者的物理实例。它结合了多种算法来减少通信开销，并以一种大规模并行化的工作窃取方式（类似于巨型CPU中的工作线程）分配计算任务块。由于篇幅（和时间）限制，细节将在另一个文档中发布。
+
+# 参考文献
+请看原文[PDF](./Nexus%20whitepaper.pdf)。
