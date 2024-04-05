@@ -434,7 +434,7 @@ $$
 - 效率。在折叠方案中，当 $P$ 和 $V$ 参与时，通讯成本和 $V$ 的计算比 $V$ 单独检查原始实例的见证人时要低。
    设
    $$
-   tr \leftarrow \text{trace}((\hat{P}, \hat{V}), \text{input})
+   tr \leftarrow trace((\hat{P}, \hat{V}), input)
    $$
 
    代表在输入 input 上运行 $(\hat{P}, \hat{V})$ 的交互记录。
@@ -484,10 +484,10 @@ $$
 
 ### 4.8.1 CCS关系
 
-**定义 4.17 (CCS [STW23a])**。让 $\text{R}_{\text{CCS}}$ 是可定制约束系统关系（CCS），定义如下。一个 $\text{R}_{\text{CCS}}$ 结构
+**定义 4.17 (CCS [STW23a])**。让 $R_{CCS}$ 是可定制约束系统关系（CCS），定义如下。一个 $R_{CCS}$ 结构
 
 $$
-\text{s}_{\text{CCS}} = (m, n, N, \ell, t, q, d, [M_i]_{i=1}^t, [S_i]_{i=1}^q, [c_i]_{i=1}^q)
+s_{CCS} = (m, n, N, \ell, t, q, d, [M_i]_{i=1}^t, [S_i]_{i=1}^q, [c_i]_{i=1}^q)
 $$
 
 包括：
@@ -497,7 +497,7 @@ $$
 - 一个序列的 $q$ 个多重集 $[S_1, \ldots, S_q]$，每个的基数最多 $d$，在域 ${1, \ldots, t}$ 上。
 - 一个序列的 $q$ 个常数 $[c_1, \ldots, c_q]$，每个在 $F$ 中。
 
-一个 $\text{R}_{\text{CCS}}$ 实例包括公共输入 $x \in F^{\ell}$。一个 $\text{R}_{\text{CCS}}$ 见证包含向量 $w \in F^{n-\ell-1}$。一个CCS结构-实例元组 $(s, x)$ 由一个 CCS 见证 $w$ 满足，如果
+一个 $R_{CCS}$ 实例包括公共输入 $x \in F^{\ell}$。一个 $R_{CCS}$ 见证包含向量 $w \in F^{n-\ell-1}$。一个CCS结构-实例元组 $(s, x)$ 由一个 CCS 见证 $w$ 满足，如果
 
 $$
 \sum_{i=1}^{q} c_i \cdot \bigodot_{j \in S_i} M_j \cdot z = 0
@@ -510,27 +510,27 @@ $$
 考虑一个CCS结构
 
 $$
-\text{s}_{\text{CCS}} = (m, n, N, \ell, t, q, d, pp, [M_i]_{i=1}^t, [S_i]_{i=1}^q, [c_i]_{i=1}^q)
+s_{CCS} = (m, n, N, \ell, t, q, d, pp, [M_i]_{i=1}^t, [S_i]_{i=1}^q, [c_i]_{i=1}^q)
 $$
 
 让 $s = \lceil \log m \rceil$, $s' = \lceil \log n \rceil$ 和 $s'' = \lceil \log(n - \ell - 1) \rceil$。通过解释每个 $M_i$ 作为类型 $\{0,1\}^{s} \times \{0,1\}^{s'} \rightarrow F$ 的函数，让 $\tilde{M}_i$ 表示 $M_i$ 的多线性扩展（MLE）。同样，对于一个推测的见证 $w \in F^{n-\ell-1}$ 让 $\tilde{w}$ 表示 $\tilde{w}$ 作为类型 ${0,1}^{s''} \rightarrow F$ 函数的MLE。
 
-**定义 4.18 (承诺的CCS)**。让 $\text{R}_{\text{CCCS}}$ 是承诺的可定制约束系统（CCCS）关系，如下定义。让PC是一个在有限域 $F$ 上的加性同态多项式承诺方案。一个 $\text{R}_{\text{CCCS}}$ 结构
+**定义 4.18 (承诺的CCS)**。让 $R_{CCCS}$ 是承诺的可定制约束系统（CCCS）关系，如下定义。让PC是一个在有限域 $F$ 上的加性同态多项式承诺方案。一个 $R_{CCCS}$ 结构
 
 $$
-\text{s}_{\text{CCCS}} = (m, n, N, \ell, t, q, d, pp, [\tilde{M_i}]_{i=1}^t, [S_i]_{i=1}^q, [c_i]_{i=1}^q)
+s_{CCCS} = (m, n, N, \ell, t, q, d, pp, [\tilde{M_i}]_{i=1}^t, [S_i]_{i=1}^q, [c_i]_{i=1}^q)
 $$
 
 包括：
 
-- 大小界限 $m,n,N,\ell,t,q,d \in \mathbb{N}$ 以及 $pp \leftarrow \text{PC.Setup}(1^{\lambda},s'')$，其中 $n > \ell$ 并且 $s = \lceil \log m \rceil$，$s' = \lceil \log n \rceil$，$s'' = \lceil \log(n - \ell - 1) \rceil$。
+- 大小界限 $m,n,N,\ell,t,q,d \in \mathbb{N}$ 以及 $pp \leftarrow PC.Setup(1^{\lambda},s'')$，其中 $n > \ell$ 并且 $s = \lceil \log m \rceil$，$s' = \lceil \log n \rceil$，$s'' = \lceil \log(n - \ell - 1) \rceil$。
 - 一个序列的 $t$ 个多线性多项式 $[\tilde{M_1}, \ldots, \tilde{M_t}]$ 每个在 $F[X_1, \ldots, X_{s+s'}]$ 上有 $s + s'$ 变量，至多有 $N = \Omega(m)$ 个在布尔超立方体 ${0,1}^{s+s'}$ 上求值为非零的位置。
 - 一个序列的 $q$ 个多重集 $[S_1, \ldots, S_q]$，每个的基数最多 $d$，在域 ${1, \ldots, t}$ 上。
 - 一个序列的 $q$ 个常数 $[c_1, \ldots, c_q]$，每个在 $F$ 中。
 
-一个 $\text{R}_{\text{CCCS}}$ 实例 $(C, x)$ 包含对 $s''$-变量多线性多项式和公共输入 $x \in F^{\ell}$ 的承诺 $C$。一个 $\text{R}_{\text{CCCS}}$ 见证是 $s''$-变量多线性多项式 $\tilde{w}$。
+一个 $R_{CCCS}$ 实例 $(C, x)$ 包含对 $s''$-变量多线性多项式和公共输入 $x \in F^{\ell}$ 的承诺 $C$。一个 $R_{CCCS}$ 见证是 $s''$-变量多线性多项式 $\tilde{w}$。
 
-一个 $\text{R}_{\text{CCCS}}$ 结构-实例元组 $(s, (C, x))$ 由 $\text{R}_{\text{CCCS}}$ 见证 $\tilde{w}$ 满足，如果 $\text{PC.Com}(pp, \tilde{w}) = C$ 并且对于所有 $x \in \{0, 1\}^s$：
+一个 $R_{CCCS}$ 结构-实例元组 $(s, (C, x))$ 由 $R_{CCCS}$ 见证 $\tilde{w}$ 满足，如果 $PC.Com(pp, \tilde{w}) = C$ 并且对于所有 $x \in \{0, 1\}^s$：
 
 ![](./pics/equa16.png)
 
@@ -538,20 +538,20 @@ $$
 
 ### 4.8.3 线性化承诺的CCS关系
 
-**定义 4.19 (线性化承诺的CCS)**。让 $\text{R}_{\text{LCCCS}}$ 是线性化承诺的可定制约束系统（LCCCS）关系，如下定义。让PC是一个在有限域 $F$ 上的加性同态多项式承诺方案。一个 $\text{R}_{\text{LCCCS}}$ 结构
+**定义 4.19 (线性化承诺的CCS)**。让 $R_{LCCCS}$ 是线性化承诺的可定制约束系统（LCCCS）关系，如下定义。让PC是一个在有限域 $F$ 上的加性同态多项式承诺方案。一个 $R_{LCCCS}$ 结构
 
 $$
-\text{s}_\text{LCCCS} = (m, n, N, \ell, t, q, d, pp, [\tilde{M_i}]_{i=1}^t, [S_i]_{i=1}^q, [c_i]_{i=1}^q)
+s_LCCCS = (m, n, N, \ell, t, q, d, pp, [\tilde{M_i}]_{i=1}^t, [S_i]_{i=1}^q, [c_i]_{i=1}^q)
 $$
 
 包括：
 
-- 大小界限 $m,n,N,\ell,t,q,d \in \mathbb{N}$ 以及 $pp \leftarrow \text{PC.Setup}(1^{\lambda},s'')$，其中 $n > \ell$ 并且 $s = \lceil \log m \rceil$，$s' = \lceil \log n \rceil$，$s'' = \lceil \log(n - \ell - 1) \rceil$。
+- 大小界限 $m,n,N,\ell,t,q,d \in \mathbb{N}$ 以及 $pp \leftarrow PC.Setup(1^{\lambda},s'')$，其中 $n > \ell$ 并且 $s = \lceil \log m \rceil$，$s' = \lceil \log n \rceil$，$s'' = \lceil \log(n - \ell - 1) \rceil$。
 - 一个序列的 $t$ 个多线性多项式 $[\tilde{M_1}, \ldots, \tilde{M_t}]$ 每个在 $F[X_1, \ldots, X_{s+s'}]$ 上有 $s + s'$ 变量，至多有 $N = \Omega(m)$ 个在布尔超立方体 ${0,1}^{s+s'}$ 上求值为非零的位置。
 - 一个序列的 $q$ 个多重集 $[S_1, \ldots, S_q]$，每个的基数最多 $d$，在域 ${1, \ldots, t}$ 上。
 - 一个序列的 $q$ 个常数 $[c_1, \ldots, c_q]$，每个在 $F$ 中。
 
-一个 $\text{R}_{\text{LCCCS}}$ 实例 $(C, x, r, [v_i]_{i=1}^t)$ 包含对一个 $s''$-变量多线性多项式的承诺 $C$ 和公共输入 $x \in F^{\ell}$，以及 $u \in F, r \in F^{s'}, v_1, \ldots, v_t \in F$。一个 $\text{R}_{\text{LCCCS}}$ 见证是一个 $s''$-变量多线性多项式 $\tilde{w}$。一个 $\text{R}_{\text{LCCCS}}$ 结构-实例元组 $(s, (C, x, r, [v_i]_{i=1}^t))$ 由一个 $\text{R}_{\text{LCCCS}}$ 见证 $\tilde{w}$ 满足，如果 $\text{PC.Com}(pp, \tilde{w}) = C$ 并且对于所有 $i \in [t]$：
+一个 $R_{LCCCS}$ 实例 $(C, x, r, [v_i]_{i=1}^t)$ 包含对一个 $s''$-变量多线性多项式的承诺 $C$ 和公共输入 $x \in F^{\ell}$，以及 $u \in F, r \in F^{s'}, v_1, \ldots, v_t \in F$。一个 $R_{LCCCS}$ 见证是一个 $s''$-变量多线性多项式 $\tilde{w}$。一个 $R_{LCCCS}$ 结构-实例元组 $(s, (C, x, r, [v_i]_{i=1}^t))$ 由一个 $R_{LCCCS}$ 见证 $\tilde{w}$ 满足，如果 $PC.Com(pp, \tilde{w}) = C$ 并且对于所有 $i \in [t]$：
 
 $$
 v_i = \sum_{y \in {0,1}^{s'}} \tilde{M}_i(r, y) \cdot \tilde{z}(y)
@@ -567,32 +567,32 @@ $$
 
 5.1 一个用于CCS的多重折叠方案
 
-**构造 5.1 (一个用于CCS的多重折叠方案 [KS23b])**。让PC是一个加法同态的多线性多项式承诺方案，用于有限域 $F$。我们构造一个用于 $(\text{R}_\text{LCCCS}, \text{R}_\text{CCCS}, compact, \mu=1, \nu=1)$ 的多重折叠方案，如下所示。
+**构造 5.1 (一个用于CCS的多重折叠方案 [KS23b])**。让PC是一个加法同态的多线性多项式承诺方案，用于有限域 $F$。我们构造一个用于 $(R_{LCCCS}, R_{CCCS}, compact, \mu=1, \nu=1)$ 的多重折叠方案，如下所示。
 
 - $compact(s_1, s_2) \to \{0,1\}$
   - 如果 $s_1 = s_2$ 返回 1，否则返回 0。
 - $G(1^\lambda) \to pp$：
   1. 样本尺寸界限 $m, n, N, \ell, t, q, d \in \mathbb{N}$，其中 $n > \ell$。
   2. 设 $s = \lceil \log m \rceil$, $s' = \lceil \log n \rceil$, $s'' = \lceil \log(n - \ell - 1) \rceil$。
-  3. $pp_{PC} \leftarrow \text{Setup}(1^\lambda, s'')$。
+  3. $pp_{PC} \leftarrow Setup(1^\lambda, s'')$。
   4. 输出 $pp \leftarrow (m, n, N, \ell, t, q, d, pp_{PC})$。
 - $K(pp, (s_1, s_2)) \to (pk, vk)$：
   1. 设 $pk \leftarrow (pp, s_1)$ 且 $vk \leftarrow pp$。
   2. 输出 $(pk, vk)$。
 - $\langle P, V \rangle ((pk, vk), (u_1, w_1), (u_2, w_2)) \to (u, w)$：
-  1. 解析 $u_1$ 作为一个 $\text{R}_\text{LCCCS}$ 实例 $(C_1, u, x_1, r_{x}, [v_i]_{i=1}^t)$。解析 $u_2$ 作为一个 $\text{R}_\text{CCCS}$ 实例 $(C_2, x_2)$。
+  1. 解析 $u_1$ 作为一个 $R_{LCCCS}$ 实例 $(C_1, u, x_1, r_{x}, [v_i]_{i=1}^t)$。解析 $u_2$ 作为一个 $R_{CCCS}$ 实例 $(C_2, x_2)$。
   2. $V \to P$：采样 $\gamma \xleftarrow{R} F$，$\beta \xleftarrow{R} F^{s}, r^{'}_x \xleftarrow{R} F^{s}$。发送 $(\gamma, \beta)$ 给 $P$。
   3. $V \to P$：运行和检查协议
    ![](./pics/equa17.png)
 其中：
    ![](./pics/equa18.png)
    
-   4. $P \to V$：发送 $[\sigma_i]^{t}_{i=1}$ 和 $[\theta_i]^{t}_{i=1}$，对于所有 $i \in [t]$：
+   1. $P \to V$：发送 $[\sigma_i]^{t}_{i=1}$ 和 $[\theta_i]^{t}_{i=1}$，对于所有 $i \in [t]$：
    ![](./pics/equa19.png)
-   5. $V$：计算 $e_1 \leftarrow \tilde{eq}(r_x, r'_x)$ 和 $e_2 \leftarrow \tilde{eq}(\beta, r'_x)$。如果以下条件不满足则中止：
+   2. $V$：计算 $e_1 \leftarrow \tilde{eq}(r_x, r'_x)$ 和 $e_2 \leftarrow \tilde{eq}(\beta, r'_x)$。如果以下条件不满足则中止：
    ![](./pics/equa20.png)
-   6. $V \to P$：采样 $\rho \xleftarrow{R} F$ 并发送给 $P$。
-   7. 1. $P, V$：输出折叠的 $\text{RLCCCS}$ 实例 $u = (C', u', x', r_x', [v_i']_{i=1}^t)$，其中对所有 $i \in [t]$：
+   3. $V \to P$：采样 $\rho \xleftarrow{R} F$ 并发送给 $P$。
+   4. 1. $P, V$：输出折叠的 $R_{LCCCS}$ 实例 $u = (C', u', x', r_x', [v_i']_{i=1}^t)$，其中对所有 $i \in [t]$：
    $$
    C' := C_1 + \rho \cdot C_2,
    $$
@@ -606,10 +606,11 @@ $$
    v_i' := \sigma_i + \rho \cdot \theta_i.
    $$
   
-   8. $P$：输出折叠的见证 $w := \tilde{w}'$，其中
+   5. $P$：输出折叠的见证 $w := \tilde{w}'$，其中
  
 $$
 \tilde{w}' := \tilde{w}_1 + \rho \cdot \tilde{w}_2.
 $$
 
-**定理 5.1 (一个用于CCS的多重折叠方案)**。构造5.1是一个用于 $(\text{R}_\text{LCCCS}, \text{R}_\text{CCCS}, compact, \mu=1, \nu=1)$ 具有完美完整性和知识健全性的公共硬币多重折叠方案。
+**定理 5.1 (一个用于CCS的多重折叠方案)**。构造5.1是一个用于 $(R_LCCCS, R_{CCCS}, compact, \mu=1, \nu=1)$ 具有完美完整性和知识健全性的公共硬币多重折叠方案。
+
