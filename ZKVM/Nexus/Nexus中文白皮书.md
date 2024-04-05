@@ -881,3 +881,67 @@ $\varphi'(h, (z, \omega, [(z_l, U_l, u_l, \pi_l), (z_r, U_r, u_r, \pi_r)], v_k, 
 
 **Theorem 5.6**. 构造 5.6 是一个具有完美完备性、知识正确性和抗攻击性的 PCD 方案。
 
+## 5.7 Parallel HyperNova
+
+**构造 5.7 (Parallel HyperNova)**. 令 NIMFS = (G, K, P, V) 是[ZDZ23]中的非交互式多重折叠方案，用于 $(\mathcal{R}_{LCCCS}, \mathcal{R}_{CCCS}, compa_t, \mu, \nu)$。我们为 $r$-ary 树转录构建了一个来自 HyperNova 的 PCD 方案。
+
+一个消息 $z$ 是一个元组 $(n, z^{(\ell)}, z^{(r)})$，它证明了 $F^{(n)}(z^{(\ell)}) = z^{(r)}$。我们定义平凡消息为 $\perp = (0, \perp, \perp)$。我们定义 T 为一个 $r$-ary 树，其中每个节点 $v = (n, z^{(\ell)}, z^{(r)}) \in V(T)$ 由它的出消息标记。
+
+![](./pics/Figure8.png)
+
+图 8: 一个 PCD 方案的 $r$-ary 树转录，用于平行 HyperNova 构造。
+
+令 $F$ 为一个多项式时间函数。首先，我们为 $F$ 定义一个合规性谓词 $\varphi$ 以及一个增强合规性谓词 $R_\varphi$ 如下：
+
+- $\varphi([z]_{i=1}^{r}, [z]_{i=1}^{r}) \rightarrow \{0, 1\}$:
+
+  1. 将 $z$ 解析为 $(n, z^{(\ell)}, z^{(r)})$。
+  2. 对于 $i \in [r]$，解析 $z_i$ 为 $(n_i, z_i^{(\ell)}, z_i^{(r)})$。
+  3. 对于 $i \in \{1, \ldots, r - 1\}$，检查 $z_{i+1}^{(\ell)} = F^{(r)}(z_i^{(\ell)}, \omega_i)$。
+  4. 检查 $n = r - 1 + \sum_{i \in [r]} n_i$。
+  5. 检查 $z^{(\ell)} = z_1^{(\ell)}$ 和 $z^{(r)} = z_r^{(r)}$。
+
+- $R_\varphi(h, ([z, \omega]_{i=1}^{r}, [(z_i, u_i, \pi_i)]_{i=1}^{r}, v_k, U, \pi)) \rightarrow \{0, 1\}$:
+
+  1. 检查 $\varphi(z, [\omega_i]_{i=1}^{r}, [z_i]_{i=1}^{r}) = 1$。
+  2. 如果对于所有 $i \in [r]$，$z_i = \perp$，则检查 $h = hash(v_k, z, \perp)$。
+     
+     否则，
+     
+     (a) 对于 $i \in [r]$，检查 $u_{i}.x = hash(v_k, z_i, U_i)$
+     
+     (b) 折叠 $U \leftarrow NIMFS.V(v_k, [U_i]_{i=1}^{r}, [u_i]_{i=1}^{r}, \pi)$
+     
+     (c) 检查 $h = hash(v_k, z, U)$
+
+   由于 $R_\varphi$ 可以在多项式时间内计算，它可以表示为一个 $\mathcal{R}_{CCCS}$ 结构。让 $(u, w) \leftarrow trace(R_\varphi, (h, (z, [\omega_i]_{i=1}^{r}, [(z_i, U_i, u_i)]_{i=1}^{r}, v_k, U, \pi)))$
+
+表示满足 $\mathcal{R}_{CCCS}$ 的实例-见证对，对于执行 $R_\varphi$ 的上述输入。
+
+   我们定义 PCD 方案 $(G, K, P, V)$ 如下：
+
+  - $G^{(1^\lambda)} \rightarrow pp$: 输出 $pp \leftarrow NIMFS.G(1^\lambda)$。
+
+  - $K(pp, \varphi) \rightarrow (pk, vk)$:
+
+    1. 计算 $(pk_{fs}, vk_{fs}) \leftarrow NIMFS.K(pp, R_\varphi)$
+    2. 输出 $(pk, vk) \leftarrow ((pk_{fs}, vk_{fs}), vk_{fs})$
+
+  - $P(pk, z, [\omega_i]_{i=1}^{r}, [(z_i, \Pi_i)]_{i=1}^{r}) \rightarrow \Pi$:
+
+    1. 对于 $i \in [r]$，解析 $\Pi_i$ 为 $((U_i, W_i), (u_i, w_i))$
+    2. 如果对于所有 $i \in [r]$，$z_i = \perp$，则设置 $(U, W, \pi) \leftarrow (u_\perp, w_\perp, \perp)$。
+       
+       否则，折叠 $(U, W, \pi) \leftarrow NIMFS.P(pk, [(U_i, W_i)]_{i=1}^{r}, [(u_i, w_i)]_{i=1}^{r})$
+    3. 计算 $h \leftarrow hash(v_k, z, U)$。
+    4. $(u, w) \leftarrow trace(R_\varphi, (h, (z, [\omega_i]_{i=1}^{r}, [(z_i, U_i, u_i)]_{i=1}^{r}, v_k, U, \pi)))$
+    5. 输出 $\Pi \leftarrow ((U, W), (u, w))$
+
+  - $V(v_k, z, \Pi) \rightarrow \{0, 1\}$:
+
+    1. 解析 $\Pi$ 为 $((U, W), (u, w))$。
+    2. 检查 $u.x = hash(v_k, z, U)$。
+    3. 检查 $(U, W)$ 和 $(u, w)$ 是满足与 $R_\varphi$ 结构对应的实例-见证对。
+
+**定理 5.7**. 构造 5.7 是一个具有完美完备性、知识正确性和抗攻击性的 PCD 方案。
+
