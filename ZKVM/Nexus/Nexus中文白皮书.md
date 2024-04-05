@@ -804,4 +804,80 @@ $$
 
 **定理 5.5 (HyperNova)**。构造5.5是一个具有完美完整性、知识健全性和精确性的IVC方案。
 
+## 5.6 Parallel Nova
+
+我们构造了一个用于二叉树PCD转录的平行Nova方案，之后我们将其与[KSt3a]中提到的一个椭圆曲线的2循环结合起来，详见第7节。
+
+**Construction 5.6 (Parallel Nova)**. 让NIFS = (G, K, P, V)是一个非交互式折叠方案，用于$\mathcal{R}_{CRR1CS}$。我们从Nova构造了一个PCD方案，用于二叉树转录。
+
+一个消息$z$是一个元组$(n, z_l, z_r)$，它证明$F^{(n)}(z_l) = z_r$。我们定义平凡消息为$\perp = (0, z_l, z_r)$对任何$z_l = z_r$。我们定义T为一个二叉树，其中每个节点$v = (n, z_l, z_r) \in V(T)$由它的出消息标记，对于每一对节点$(u, v)$，存在一个边$e = (u, v) \in E(T)$当且仅当$n^{(v)} = 2n^{(u)} + 1$且$z_l^{(v)} = z_l^{(u)}$或$z_r^{(v)} = z_r^{(u)}$。
+
+![](./pics/Figure7.png)
+图7: 二叉树平行Nova构造的后序深度优先遍历。
+
+节点通过树的后序深度优先遍历共同计算$F$，从最左边的叶子开始，经过根节点，结束于最右边的叶子。根节点积累了它所有下游子孙的证明，因此证明了整个计算。
+
+让$F$是一个多项式时间函数。首先，我们定义一个$F$的合规性谓词$\varphi$和一个增强合规性谓词$\varphi'$如下：
+
+$\varphi(z, \omega, [z_l, z_r]) \rightarrow \{0, 1\}$:
+
+1. 将$z$解析为$(n, z_l, z_r)$，$z_l$解析为$(n_l, z_l^{(l)}, z_r^{(l)})$，以及$z_r$解析为$(n_r, z_l^{(r)}, z_r^{(r)})$。
+2. 如果$z_l = z_r = \perp$，检查$z_l^{(l)} = z_r^{(l)}$并且$z_l^{(r)} = z_r^{(r)}$。
+3. 检查$z_r^{(l)} = F^{(r)}(z_l^{(r)}, \omega)$。
+4. 检查$n = n_l + 1 + n_r$。
+5. 检查$z_l^{(l)} = z_l^{(l)}$并且$z_r^{(l)} = z_r^{(r)}$。
+
+$\varphi'(h, (z, \omega, [(z_l, U_l, u_l, \pi_l), (z_r, U_r, u_r, \pi_r)], v_k, U, \pi)) \rightarrow \{0, 1\}$:
+
+1. 检查$\varphi(z, \omega, [z_l, z_r]) = 1$。
+2. 如果$z_l = z_r = \perp$，然后检查$h = hash(v_k, z, \perp)$。
+   否则，
+   
+   (a) 检查$u_l.x = hash(v_k, z_l, u_l)$
+   
+   (b) 检查$u_r.x = hash(v_k, z_r, u_r)$
+   
+   (c) 对$u_l'$ 折叠 $u_l' \leftarrow NIFS.V(v_k, u_l, u_l, \pi_l)$
+   
+   (d) 对$u_r'$ 折叠 $u_r' \leftarrow NIFS.V(v_k, u_r, u_r, \pi_r)$
+   
+   (e) 对$u$ 折叠 $u \leftarrow NIFS.V(v_k, u_l', u_r', \pi)$
+   
+   (f) 检查$h = hash(v_k, z, u)$
+
+由于$\varphi'$可以在多项式时间内被计算，它可以被表示为$\mathcal{R}_{CRR1CS}$结构。让$(u, w) \leftarrow trace(\mathcal{R}_{\phi}, (h, (z, \omega, [(z_l, U_l, u_l, \pi_l), (z_r, U_r, u_r, \pi_r)], v_k, U, \pi)))$
+
+表示满足$\mathcal{R}_{CRR1CS}$实例-见证对于执行$\mathcal{R}_{\phi}$上面的输入。我们定义PCD方案$(G, K, P, V)$如下：
+
+- $G(1^\lambda) \rightarrow pp$: 输出 $pp \leftarrow NIFS.G(1^\lambda)$。
+
+- $K(pp, \phi) \rightarrow (pk, vk)$: 
+  1. 计算 $(pk_{s}, vk_{s}) \leftarrow NIFS.K(pp, \phi')$
+  2. 输出 $(pk, vk) \leftarrow ((pk_{fs}, vk_{fs}), vk_{s})$
+
+- $P(pk, z, \omega, [(z_l, \Pi_l), (z_r, \Pi_r)]) \rightarrow \Pi$:
+
+  1. 解析 $\pi_l$ 为 $((U_l, W_l), (u_l, w_l))$
+  2. 解析 $\pi_r$ 为 $((U_r, W_r), (u_r, w_r))$
+  3. 如果 $z_l = z_r = \perp$，则设置 $(U, W, \pi) \leftarrow (u_\perp, w_\perp, \perp)$ 并且 $(\pi_l, \pi_r) \leftarrow (\perp, \perp)$。
+   
+      否则，
+   
+      (a) 折叠 $(U_l', W_l', \pi_l) \leftarrow NIFS.P(pk, (U_l, W_l), (u_l, w_l))$
+      
+      (b) 折叠 $(U_r', W_r', \pi_r) \leftarrow NIFS.P(pk, (U_r, W_r), (u_r, w_r))$
+      
+      (c) 折叠 $(U, W, \pi) \leftarrow NIFS.P(pk, (U_l', W_l'), (u_r', w_r'))$
+
+  4. 计算 $h \leftarrow hash(v_k, z, U)$。
+  5. $(u, w) \leftarrow trace(\phi', (h, (z, \omega, [(z_l, U_l, u_l, \pi_l), (z_r, U_r, u_r, \pi_r)]), v_k, U, \pi))$
+  6. 输出 $\Pi \leftarrow ((U, W), (u, w))$
+
+- $V(v_k, z, \Pi) \rightarrow \{0, 1\}$:
+
+1. 解析 $\Pi$ 为 $((U, w), (u, W))$。
+2. 检查 $u.x = hash(v_k, z, U)$。
+3. 检查 $(U, W)$ 和 $(u, w)$ 是满足关于结构对应 $\phi'$ 的实例-见证对。
+
+**Theorem 5.6**. 构造 5.6 是一个具有完美完备性、知识正确性和抗攻击性的 PCD 方案。
 
