@@ -153,7 +153,7 @@ Nexus 网络试图做同样的事情，但针对的是可验证计算的问题�
    使用 Nexus zkVM 对任何 Rust 程序，如示例1，进行证明就像执行以下操作一样简单：
 
    ```bash
-  $cargo nexus prove →$cargo nexus verify
+    $cargo nexus prove →$cargo nexus verify
    ```
 
 3. **Nexus 虚拟机**。NVM 和其算术化版本在 R1CS 的实现，以及用于内存检查的 Merkle 证明，还有一个 RISC-V 到 NVM 的编译器。
@@ -167,7 +167,7 @@ Nexus 网络试图做同样的事情，但针对的是可验证计算的问题�
    - **Nexus MSM Prover**，一个可以在至少有 1GB RAM 的任何机器上运行的证明者节点。这些节点通过按需计算 MSMs 为网络提供计算资源。向系统提供计算资源就像执行以下操作一样简单：
 
       ```bash
-     $cargo nexus compute
+       $cargo nexus compute
       ```
 
    - **Nexus PCD Prover**，一个可以在任何机器上运行并为网络提供计算资源的证明者节点。Nexus 团队目前在操作这些节点。
